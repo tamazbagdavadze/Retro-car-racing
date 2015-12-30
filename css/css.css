@@ -1,0 +1,33 @@
+
+#game{
+    margin: 100px auto;
+    width: 300px;
+}
+
+.roadBorder{
+    width: 10%;
+}
+
+#right{
+    background: yellow;
+}
+
+#left{
+    background: black;
+}
+
+#road{
+    background: green;
+    width: 80%;
+}
+
+#right, #left, #road{
+    float: left;
+    height: 100px;
+}
+
+
+.clear{
+    clear: both;
+    display: none;
+}
