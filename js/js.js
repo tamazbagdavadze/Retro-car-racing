@@ -32,7 +32,7 @@ var RetroCarRacing = (function () {
     var cars = [];
     var myCar = null;
     const roadSegments = 18;
-    var interval = 200;
+    var interval = 100;
     var intervalId = null;
 
     // TODO rewrite smarter...
@@ -105,6 +105,16 @@ var RetroCarRacing = (function () {
         domElement.setAttribute('width', screenWidth);
     }
 
+    function checkCollision(){
+        var tempCars = cars.filter(function(car){
+            return car.side == myCar.side ||
+                   car.y > myCar.y && car.y < myCar.y + 4 ||
+                   car.y < myCar.y && car.y > myCar.y - 4;
+        });
+
+        return tempCars.length;
+    }
+
     function keyDown(e) {
         switch (e.which) {
 
@@ -136,6 +146,10 @@ var RetroCarRacing = (function () {
                 break;
             }
         }
+
+        if(checkCollision()){
+            alert('collision');
+        }
     }
 
     function init() {
@@ -155,8 +169,14 @@ var RetroCarRacing = (function () {
 
             var r  = Math.floor(Math.random()*10000);
 
-            var addNewCar = r%8 == 0; // TODO analyze
-            var side = sides[r&100%3]; // TODO make smarter
+            var addNewCar = r%7 == 0; // TODO analyze
+            var side = sides[r%3]; // TODO make smarter
+
+            if(cars.filter(function(car){return car.side == side && car.y < 4;}).length) // distance between cars
+                addNewCar = false;
+
+            if(cars.filter(function(car){return car.y < 7;}).length > 1)
+                addNewCar = false;
 
             if(addNewCar){
                 let car = new Car(side, 0);
