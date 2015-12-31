@@ -32,20 +32,37 @@ var RetroCarRacing = (function(){
                 ctx.strokeRect(x + i, y + j, innerSquareWidth, innerSquareWidth);
             }
         }
-        
     }
 
     function resize(){
+
         screenHeight = getComputedStyle(domElement)['height'].slice(0, -2);
-        screenWidth = getComputedStyle(domElement)['width'].slice(0, -2);
+        screenWidth = screenHeight / 18 * 10;
+
+        var bodyWidth = parseInt(getComputedStyle(document.body)['width'].slice(0, -2), 10);
+
+        if(bodyWidth < screenWidth){
+            screenWidth = bodyWidth;
+            screenHeight = screenWidth / 10 * 18;
+        }
+
         domElement.setAttribute('height', screenHeight);
         domElement.setAttribute('width', screenWidth);
+
+        clear();
+
+        drawSquare(0,0, Math.floor(screenWidth / 10));
+        drawSquare(screenWidth/10,0, Math.floor(screenWidth / 10));
     }
 
     function init(){
         ctx = domElement.getContext('2d');
         resize();
         window.addEventListener('resize',resize);
+    }
+
+    function clear(){
+        ctx.clearRect(0, 0, screenWidth, screenHeight);
     }
 
     function render(){
@@ -58,7 +75,7 @@ var RetroCarRacing = (function(){
         },
         start : function(){
             init();
-            drawSquare(30,30,60);
+           // drawSquare(30,30, Math.floor(screenWidth / 10));
         }
     };
 }());

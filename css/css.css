@@ -5,6 +5,8 @@ html, body #game{
 }
 
 canvas{
-    width: 100%;
+    display: block;
+    margin: 0 auto;
     height: 100%;
+    border: 1px solid black;
 }
