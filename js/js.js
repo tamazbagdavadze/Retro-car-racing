@@ -107,10 +107,6 @@ var RetroCarRacing = (function () {
 
     function checkCollision(){
         var tempCars = cars.filter(function(car){
-
-            console.log(myCar);
-            console.log(car);
-
             return car.side == myCar.side &&(
                    car.y > myCar.y && car.y < myCar.y + 4 ||
                    car.y < myCar.y && car.y > myCar.y - 4);
@@ -193,7 +189,7 @@ var RetroCarRacing = (function () {
 
         //file array with cars
         cars.forEach(function(car){
-            var index = car.y / 4;
+            var index = Math.floor(car.y / 4);
             m[car.side][index] = 1;
 
             if(car.y % 4 > 0){
@@ -201,31 +197,36 @@ var RetroCarRacing = (function () {
             }
         });
 
-        var isPath;
+        var existsPath = false;
+
         function rec(x, y){
 
-            if(isPath)
+            if(existsPath)
                 return;
 
+            m[x][y] = 1;
+
             if(y == 0){
-                isPath = true;
-                console.log('ok');
+                existsPath = true;
                 return;
             }
 
             if(y != 0)
                 if(m[x][y - 1] == 0)
                     rec(x, y-1);
-            if(x != 5)
+            if(x != 2)
                 if(m[x+1][y] == 0)
                     rec(x+1, y);
             if(x != 0)
                 if(m[x-1][y] == 0)
                     rec(x-1, y);
         }
-        rec(0,4);
 
-        return true;
+        rec(myCar.side, 5);
+
+         console.log(existsPath);
+
+        return existsPath;
     }
 
     function restart (){
