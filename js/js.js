@@ -11,9 +11,14 @@ var RetroCarRacing = (function(){
     var ctx = null;
     var screenWidth = null;
     var screenHeight = null;
+    var squareWidth = null;
+    var emptyRoadSquareNumber = 1;
 
-    function drawSquare(x,y,width){
+    function drawSquare(x,y){
         "use strict";
+
+        var width = squareWidth;
+
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 3;
         ctx.strokeRect(x, y, width, width);
@@ -36,7 +41,7 @@ var RetroCarRacing = (function(){
 
     function resize(){
 
-        screenHeight = getComputedStyle(domElement)['height'].slice(0, -2);
+        screenHeight = parseInt(getComputedStyle(domElement)['height'].slice(0, -2), 10);
         screenWidth = screenHeight / 18 * 10;
 
         var bodyWidth = parseInt(getComputedStyle(document.body)['width'].slice(0, -2), 10);
@@ -51,14 +56,18 @@ var RetroCarRacing = (function(){
 
         clear();
 
-        drawSquare(0,0, Math.floor(screenWidth / 10));
-        drawSquare(screenWidth/10,0, Math.floor(screenWidth / 10));
+        squareWidth = Math.floor(screenWidth / 10);
     }
 
     function init(){
         ctx = domElement.getContext('2d');
         resize();
         window.addEventListener('resize',resize);
+        render();
+
+        setInterval(function(){
+            emptyRoadSquareNumber = ++emptyRoadSquareNumber % 4;
+        }, 100);
     }
 
     function clear(){
@@ -66,7 +75,20 @@ var RetroCarRacing = (function(){
     }
 
     function render(){
+        clear();
+        drawRoad();
         requestAnimationFrame(render);
+    }
+
+    function drawRoad(){
+
+        for(let i = 0; i < screenHeight / squareWidth; i++){
+
+            if(i % 4 == emptyRoadSquareNumber)continue;
+
+            drawSquare(0, i * squareWidth);
+            drawSquare(screenWidth - squareWidth, i * squareWidth);
+        }
     }
 
     return {
@@ -75,7 +97,6 @@ var RetroCarRacing = (function(){
         },
         start : function(){
             init();
-           // drawSquare(30,30, Math.floor(screenWidth / 10));
         }
     };
 }());
