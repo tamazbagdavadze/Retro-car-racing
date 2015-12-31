@@ -34,22 +34,7 @@ var RetroCarRacing = (function () {
         var x = squareWidth;
         var y = car.y * squareWidth;
 
-        switch (car.side) {
-            case sides.left:
-            {
-                break;
-            }
-            case sides.center:
-            {
-                x += (3 * squareWidth);
-                break;
-            }
-            case sides.right:
-            {
-                x += (6 * squareWidth);
-                break;
-            }
-        }
+        x += car.side * 3 * squareWidth;
 
         drawSquare(x + squareWidth, y);
 
