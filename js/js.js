@@ -18,6 +18,10 @@ var RetroCarRacing = (function () {
         right: 2
     };
 
+    sides[0] = 0;
+    sides[1] = 1;
+    sides[2] = 2;
+
 
     var domElement = null;
     var ctx = null;
@@ -27,8 +31,11 @@ var RetroCarRacing = (function () {
     var emptyRoadSquareNumber = 1;
     var cars = [];
     var myCar = null;
+    const roadSegments = 18;
+    var interval = 200;
+    var intervalId = null;
 
-
+    // TODO rewrite smarter...
     function drawCar(car) {
 
         var x = squareWidth;
@@ -137,12 +144,25 @@ var RetroCarRacing = (function () {
         window.addEventListener('resize', resize);
         window.addEventListener('keydown', keyDown);
 
-        myCar = new Car(sides.right, 14);
+        myCar = new Car(sides.right, roadSegments - 4);
 
         render();
-        setInterval(function () {
+
+        intervalId = setInterval(function () {
             emptyRoadSquareNumber = ++emptyRoadSquareNumber % 4;
-        }, 200);
+            cars = cars.filter(function(car){return car.y < 18;});
+            cars.forEach(function(car){car.y++;});
+
+            var r  = Math.floor(Math.random()*10000);
+
+            var addNewCar = r%8 == 0; // TODO analyze
+            var side = sides[r&100%3]; // TODO make smarter
+
+            if(addNewCar){
+                let car = new Car(side, 0);
+                cars.push(car);
+            }
+        }, interval);
     }
 
     function clear() {
@@ -152,8 +172,8 @@ var RetroCarRacing = (function () {
     function render() {
         clear();
         drawRoad();
-
         drawCar(myCar);
+        cars.forEach(drawCar);
 
         requestAnimationFrame(render);
     }
@@ -168,10 +188,6 @@ var RetroCarRacing = (function () {
             drawSquare(0, i * squareWidth);
             drawSquare(screenWidth - squareWidth, i * squareWidth);
         }
-
-        //for(let i = 0; i< screenWidth / squareWidth; i++ ){
-        //    drawSquare(i * squareWidth, 0);
-        //}
     }
 
     return {
