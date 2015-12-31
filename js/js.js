@@ -107,10 +107,6 @@ var RetroCarRacing = (function () {
 
     function checkCollision(){
         var tempCars = cars.filter(function(car){
-
-            console.log(myCar);
-            console.log(car);
-
             return car.side == myCar.side &&(
                    car.y > myCar.y && car.y < myCar.y + 4 ||
                    car.y < myCar.y && car.y > myCar.y - 4);
@@ -153,6 +149,86 @@ var RetroCarRacing = (function () {
 
     }
 
+    function oneStep(){
+        emptyRoadSquareNumber = ++emptyRoadSquareNumber % 4;
+        cars = cars.filter(function(car){return car.y < 18;});
+        cars.forEach(function(car){car.y++;});
+
+        var r  = Math.floor(Math.random()*10000);
+
+        var addNewCar = r%7 == 0; // TODO analyze
+        var side = sides[r%3]; // TODO make smarter
+
+        if(cars.filter(function(car){return car.side == side && car.y < 4;}).length) { // distance between cars
+            addNewCar = false;
+        }
+
+        if(checkPath(side) == false){
+            addNewCar = false;
+        }
+
+        if(addNewCar){
+            let car = new Car(side, 0);
+            cars.push(car);
+        }
+
+        if(checkCollision()){
+            alert('გაასხი! თავიდან...');
+            restart();
+        }
+    }
+
+    //TODO complete
+    function checkPath(side){
+
+        var m = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]];
+
+        m[side][0] = 1; // new car
+
+        m[myCar.side][5] = 1; // my car
+
+        //file array with cars
+        cars.forEach(function(car){
+            var index = Math.floor(car.y / 4);
+            m[car.side][index] = 1;
+
+            if(car.y % 4 > 0){
+                m[car.side][index + 1] = 1;
+            }
+        });
+
+        var existsPath = false;
+
+        function rec(x, y){
+
+            if(existsPath)
+                return;
+
+            m[x][y] = 1;
+
+            if(y == 0){
+                existsPath = true;
+                return;
+            }
+
+            if(y != 0)
+                if(m[x][y - 1] == 0)
+                    rec(x, y-1);
+            if(x != 2)
+                if(m[x+1][y] == 0)
+                    rec(x+1, y);
+            if(x != 0)
+                if(m[x-1][y] == 0)
+                    rec(x-1, y);
+        }
+
+        rec(myCar.side, 5);
+
+         console.log(existsPath);
+
+        return existsPath;
+    }
+
     function restart (){
 
         clearInterval(intervalId);
@@ -162,36 +238,7 @@ var RetroCarRacing = (function () {
 
         render();
 
-        intervalId = setInterval(function () {
-            emptyRoadSquareNumber = ++emptyRoadSquareNumber % 4;
-            cars = cars.filter(function(car){return car.y < 18;});
-            cars.forEach(function(car){car.y++;});
-
-            var r  = Math.floor(Math.random()*10000);
-
-            var addNewCar = r%7 == 0; // TODO analyze
-            var side = sides[r%3]; // TODO make smarter
-
-            if(cars.filter(function(car){return car.side == side && car.y < 4;}).length) // distance between cars
-                addNewCar = false;
-
-            if(cars.filter(function(car){return car.y < 7;}).length > 1)
-                addNewCar = false;
-
-            if(addNewCar){
-                let car = new Car(side, 0);
-                cars.push(car);
-            }
-
-            if(checkCollision()){
-                alert('გაასხი! თავიდან...');
-
-                //clearInterval(intervalId);
-                //return;
-
-                restart();
-            }
-        }, interval);
+        intervalId = setInterval(oneStep, interval);
     }
 
     function init() {
