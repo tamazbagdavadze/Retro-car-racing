@@ -179,7 +179,7 @@ var RetroCarRacing = (function () {
         }
     }
 
-    //TODO complete
+    //TODO refactor
     function checkPath(side){
 
         var m = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]];
