@@ -107,9 +107,13 @@ var RetroCarRacing = (function () {
 
     function checkCollision(){
         var tempCars = cars.filter(function(car){
-            return car.side == myCar.side ||
+
+            console.log(myCar);
+            console.log(car);
+
+            return car.side == myCar.side &&(
                    car.y > myCar.y && car.y < myCar.y + 4 ||
-                   car.y < myCar.y && car.y > myCar.y - 4;
+                   car.y < myCar.y && car.y > myCar.y - 4);
         });
 
         return tempCars.length;
@@ -147,16 +151,12 @@ var RetroCarRacing = (function () {
             }
         }
 
-        if(checkCollision()){
-            alert('collision');
-        }
     }
 
-    function init() {
-        ctx = domElement.getContext('2d');
-        resize();
-        window.addEventListener('resize', resize);
-        window.addEventListener('keydown', keyDown);
+    function restart (){
+
+        clearInterval(intervalId);
+        cars = [];
 
         myCar = new Car(sides.right, roadSegments - 4);
 
@@ -182,7 +182,25 @@ var RetroCarRacing = (function () {
                 let car = new Car(side, 0);
                 cars.push(car);
             }
+
+            if(checkCollision()){
+                alert('გაასხი! თავიდან...');
+
+                //clearInterval(intervalId);
+                //return;
+
+                restart();
+            }
         }, interval);
+    }
+
+    function init() {
+        ctx = domElement.getContext('2d');
+        resize();
+        window.addEventListener('resize', resize);
+        window.addEventListener('keydown', keyDown);
+
+        restart();
     }
 
     function clear() {
