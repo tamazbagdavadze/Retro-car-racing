@@ -31,7 +31,8 @@ var RetroCarRacing = (function () {
     var emptyRoadSquareNumber = 1;
     var cars = [];
     var myCar = null;
-    const roadSegments = 18;
+    const roadHeightSegments = 18;
+    const roadWidthSegments = 11;
     var interval = 100;
     var intervalId = null;
 
@@ -92,14 +93,14 @@ var RetroCarRacing = (function () {
 
         if (bodyWidth < screenWidth) { //TODO fix width change
             screenWidth = bodyWidth;
-            screenHeight = screenWidth / 11 * 18;
+            screenHeight = screenWidth / roadWidthSegments * roadHeightSegments;
         } else {
             screenHeight = parseInt(getComputedStyle(domElement)['height'].slice(0, -2), 10);
-            screenWidth = Math.floor(screenHeight / 18 * 11);
+            screenWidth = Math.floor(screenHeight / roadHeightSegments * roadWidthSegments);
         }
 
-        squareWidth = Math.floor(screenWidth / 11);
-        screenWidth = 11 * squareWidth; // pixel perfect :v
+        squareWidth = Math.floor(screenWidth / roadWidthSegments);
+        screenWidth = roadWidthSegments * squareWidth; // pixel perfect :v
 
         domElement.setAttribute('height', screenHeight);
         domElement.setAttribute('width', screenWidth);
@@ -184,7 +185,6 @@ var RetroCarRacing = (function () {
         var m = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]];
 
         m[side][0] = 1; // new car
-
         m[myCar.side][5] = 1; // my car
 
         //file array with cars
@@ -224,8 +224,6 @@ var RetroCarRacing = (function () {
 
         rec(myCar.side, 5);
 
-         console.log(existsPath);
-
         return existsPath;
     }
 
@@ -234,7 +232,7 @@ var RetroCarRacing = (function () {
         clearInterval(intervalId);
         cars = [];
 
-        myCar = new Car(sides.right, roadSegments - 4);
+        myCar = new Car(sides.right, roadHeightSegments - 4);
 
         render();
 
