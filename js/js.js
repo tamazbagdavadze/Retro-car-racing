@@ -108,6 +108,8 @@ var RetroCarRacing = (function () {
 
         domElement.setAttribute('height', screenHeight);
         domElement.setAttribute('width', screenWidth);
+
+        render();
     }
 
     function checkCollision(){
@@ -151,6 +153,8 @@ var RetroCarRacing = (function () {
                 break;
             }
         }
+
+        render();
     }
 
     //TODO refactor
@@ -186,6 +190,8 @@ var RetroCarRacing = (function () {
             alert('გაასხი! თავიდან...');
             restart();
         }
+
+        render();
     }
 
     function setScore(newScore){
@@ -268,7 +274,7 @@ var RetroCarRacing = (function () {
 
     function init() {
         ctx = domElement.getContext('2d');
-        resize();
+
         window.addEventListener('resize', resize);
         window.addEventListener('keydown', keyDown);
 
@@ -276,6 +282,7 @@ var RetroCarRacing = (function () {
         scoreDomElement.innerText = 0;
 
         restart();
+        resize();
     }
 
     function clear() {
@@ -288,7 +295,7 @@ var RetroCarRacing = (function () {
         drawCar(myCar);
         cars.forEach(drawCar);
 
-        requestAnimationFrame(render);
+        //requestAnimationFrame(render);
     }
 
     function drawRoad() {
