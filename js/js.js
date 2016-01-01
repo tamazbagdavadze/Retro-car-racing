@@ -283,10 +283,15 @@ var RetroCarRacing = (function () {
         window.addEventListener('touchend',function(e){
             var x = parseInt(localStorage.getItem('x'), 10);
 
-            if(x > e.changedTouches[0].clientX + 20)
-                keyDown({which:39});
-            else if(x < e.changedTouches[0].clientX - 20)
-                keyDown({which:37});
+            //noinspection JSUnresolvedVariable
+            if(x > e.changedTouches[0].clientX + 20) {
+                keyDown({which: 39});
+            }
+            else {
+                //noinspection JSUnresolvedVariable
+                if(x < e.changedTouches[0].clientX - 20)
+                    keyDown({which:37});
+            }
         });
 
         levelDomElement.innerText = 0;
