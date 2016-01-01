@@ -24,6 +24,9 @@ var RetroCarRacing = (function () {
 
 
     var domElement = null;
+    var infoDomElement = null;
+    var levelDomElement = null;
+    var scoreDomElement = null;
     var ctx = null;
     var screenWidth = null;
     var screenHeight = null;
@@ -33,8 +36,9 @@ var RetroCarRacing = (function () {
     var myCar = null;
     const roadHeightSegments = 18;
     const roadWidthSegments = 11;
-    var interval = 100;
+    var interval = 200;
     var intervalId = null;
+    var score = 0;
 
     // TODO rewrite smarter...
     function drawCar(car) {
@@ -147,11 +151,16 @@ var RetroCarRacing = (function () {
                 break;
             }
         }
-
     }
 
+    //TODO refactor
     function oneStep(){
         emptyRoadSquareNumber = ++emptyRoadSquareNumber % 4;
+
+        var newScore = cars.filter(function(car){ return car.y == myCar.y + 4; }).length;
+        if(newScore)
+            setScore(score + newScore);
+
         cars = cars.filter(function(car){return car.y < 18;});
         cars.forEach(function(car){car.y++;});
 
@@ -176,6 +185,23 @@ var RetroCarRacing = (function () {
         if(checkCollision()){
             alert('გაასხი! თავიდან...');
             restart();
+        }
+    }
+
+    function setScore(newScore){
+        score = newScore;
+        if(score % 10 == 0 && score != 0){
+            setLevel(Math.floor(score / 10));
+        }
+        scoreDomElement.innerText = "score : " + score + ". ";
+    }
+
+    function setLevel(level){
+        levelDomElement.innerText = "level : " + level + ".  ";
+        if(interval>30 && level != 0){
+            interval -= 30;
+            clearInterval(intervalId);
+            intervalId = setInterval(oneStep, interval);
         }
     }
 
@@ -228,14 +254,15 @@ var RetroCarRacing = (function () {
     }
 
     function restart (){
-
         clearInterval(intervalId);
         cars = [];
 
+        setScore(0);
+        setLevel(0);
+
+        interval = 200;
         myCar = new Car(sides.right, roadHeightSegments - 4);
-
         render();
-
         intervalId = setInterval(oneStep, interval);
     }
 
@@ -244,6 +271,9 @@ var RetroCarRacing = (function () {
         resize();
         window.addEventListener('resize', resize);
         window.addEventListener('keydown', keyDown);
+
+        levelDomElement.innerText = 0;
+        scoreDomElement.innerText = 0;
 
         restart();
     }
@@ -279,6 +309,19 @@ var RetroCarRacing = (function () {
         },
         start: function () {
             init();
+        },
+        setInfoDomElement : function(el){
+            infoDomElement = el;
+
+            levelDomElement = document.createElement('span');
+            levelDomElement.id = 'level';
+
+            infoDomElement.appendChild(levelDomElement);
+
+            scoreDomElement = document.createElement('span');
+            scoreDomElement.id = 'score';
+
+            infoDomElement.appendChild(scoreDomElement);
         }
     };
 }());
@@ -287,5 +330,6 @@ window.onload = function () {
     "use strict";
 
     RetroCarRacing.setDomElement(document.getElementById('canvas'));
+    RetroCarRacing.setInfoDomElement(document.getElementById('info'));
     RetroCarRacing.start();
 };
