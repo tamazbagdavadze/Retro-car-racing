@@ -165,7 +165,7 @@ var RetroCarRacing = (function () {
         if(newScore)
             setScore(score + newScore);
 
-        cars = cars.filter(function(car){return car.y < 18;});
+        cars = cars.filter(function(car){return car.y < 18;}); // delete passed cars
         cars.forEach(function(car){car.y++;});
 
         var r  = Math.floor(Math.random()*10000);
@@ -277,6 +277,17 @@ var RetroCarRacing = (function () {
 
         window.addEventListener('resize', resize);
         window.addEventListener('keydown', keyDown);
+        window.addEventListener('touchstart', function(e) {
+            localStorage.setItem('x', e.targetTouches[0].clientX);
+        });
+        window.addEventListener('touchend',function(e){
+            var x = parseInt(localStorage.getItem('x'), 10);
+
+            if(x > e.changedTouches[0].clientX + 20)
+                keyDown({which:39});
+            else if(x < e.changedTouches[0].clientX - 20)
+                keyDown({which:37});
+        });
 
         levelDomElement.innerText = 0;
         scoreDomElement.innerText = 0;
