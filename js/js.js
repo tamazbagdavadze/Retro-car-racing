@@ -159,7 +159,7 @@ var RetroCarRacing = (function () {
 
     //TODO refactor
     function oneStep(){
-        emptyRoadSquareNumber = ++emptyRoadSquareNumber % 4;
+        emptyRoadSquareNumber = (2 + emptyRoadSquareNumber) % 4;
 
         var newScore = cars.filter(function(car){ return car.y == myCar.y + 4; }).length;
         if(newScore)
