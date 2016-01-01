@@ -24,9 +24,6 @@ var RetroCarRacing = (function () {
 
 
     var domElement = null;
-    var infoDomElement = null;
-    var levelDomElement = null;
-    var scoreDomElement = null;
     var ctx = null;
     var screenWidth = null;
     var screenHeight = null;
@@ -34,11 +31,9 @@ var RetroCarRacing = (function () {
     var emptyRoadSquareNumber = 1;
     var cars = [];
     var myCar = null;
-    const roadHeightSegments = 18;
-    const roadWidthSegments = 11;
-    var interval = 200;
+    const roadSegments = 18;
+    var interval = 100;
     var intervalId = null;
-    var score = 0;
 
     // TODO rewrite smarter...
     function drawCar(car) {
@@ -97,14 +92,14 @@ var RetroCarRacing = (function () {
 
         if (bodyWidth < screenWidth) { //TODO fix width change
             screenWidth = bodyWidth;
-            screenHeight = screenWidth / roadWidthSegments * roadHeightSegments;
+            screenHeight = screenWidth / 11 * 18;
         } else {
             screenHeight = parseInt(getComputedStyle(domElement)['height'].slice(0, -2), 10);
-            screenWidth = Math.floor(screenHeight / roadHeightSegments * roadWidthSegments);
+            screenWidth = Math.floor(screenHeight / 18 * 11);
         }
 
-        squareWidth = Math.floor(screenWidth / roadWidthSegments);
-        screenWidth = roadWidthSegments * squareWidth; // pixel perfect :v
+        squareWidth = Math.floor(screenWidth / 11);
+        screenWidth = 11 * squareWidth; // pixel perfect :v
 
         domElement.setAttribute('height', screenHeight);
         domElement.setAttribute('width', screenWidth);
@@ -151,16 +146,11 @@ var RetroCarRacing = (function () {
                 break;
             }
         }
+
     }
 
-    //TODO refactor
     function oneStep(){
         emptyRoadSquareNumber = ++emptyRoadSquareNumber % 4;
-
-        var newScore = cars.filter(function(car){ return car.y == myCar.y + 4; }).length;
-        if(newScore)
-            setScore(score + newScore);
-
         cars = cars.filter(function(car){return car.y < 18;});
         cars.forEach(function(car){car.y++;});
 
@@ -188,29 +178,13 @@ var RetroCarRacing = (function () {
         }
     }
 
-    function setScore(newScore){
-        score = newScore;
-        if(score % 10 == 0 && score != 0){
-            setLevel(Math.floor(score / 10));
-        }
-        scoreDomElement.innerText = "score : " + score + ". ";
-    }
-
-    function setLevel(level){
-        levelDomElement.innerText = "level : " + level + ".  ";
-        if(interval>30 && level != 0){
-            interval -= 30;
-            clearInterval(intervalId);
-            intervalId = setInterval(oneStep, interval);
-        }
-    }
-
-    //TODO refactor
+    //TODO complete
     function checkPath(side){
 
         var m = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]];
 
         m[side][0] = 1; // new car
+
         m[myCar.side][5] = 1; // my car
 
         //file array with cars
@@ -250,19 +224,20 @@ var RetroCarRacing = (function () {
 
         rec(myCar.side, 5);
 
+         console.log(existsPath);
+
         return existsPath;
     }
 
     function restart (){
+
         clearInterval(intervalId);
         cars = [];
 
-        setScore(0);
-        setLevel(0);
+        myCar = new Car(sides.right, roadSegments - 4);
 
-        interval = 200;
-        myCar = new Car(sides.right, roadHeightSegments - 4);
         render();
+
         intervalId = setInterval(oneStep, interval);
     }
 
@@ -271,9 +246,6 @@ var RetroCarRacing = (function () {
         resize();
         window.addEventListener('resize', resize);
         window.addEventListener('keydown', keyDown);
-
-        levelDomElement.innerText = 0;
-        scoreDomElement.innerText = 0;
 
         restart();
     }
@@ -309,19 +281,6 @@ var RetroCarRacing = (function () {
         },
         start: function () {
             init();
-        },
-        setInfoDomElement : function(el){
-            infoDomElement = el;
-
-            levelDomElement = document.createElement('span');
-            levelDomElement.id = 'level';
-
-            infoDomElement.appendChild(levelDomElement);
-
-            scoreDomElement = document.createElement('span');
-            scoreDomElement.id = 'score';
-
-            infoDomElement.appendChild(scoreDomElement);
         }
     };
 }());
@@ -330,6 +289,5 @@ window.onload = function () {
     "use strict";
 
     RetroCarRacing.setDomElement(document.getElementById('canvas'));
-    RetroCarRacing.setInfoDomElement(document.getElementById('info'));
     RetroCarRacing.start();
 };
