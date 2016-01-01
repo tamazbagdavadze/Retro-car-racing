@@ -1,0 +1,24 @@
+html, body #game{
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+}
+
+canvas{
+    display: block;
+    margin: 0 auto;
+    height: 100%;
+    border: 1px solid black;
+}
+
+#info{
+    position: fixed;
+    top : 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 200px;
+    height: 10px;
+    margin: 0 auto;
+    font-size: larger;
+}
