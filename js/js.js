@@ -2,8 +2,6 @@
  * Created by tazo on 12/30/2015.
  */
 
-
-
 var RetroCarRacing = (function () {
 
     'use strict';
@@ -12,7 +10,6 @@ var RetroCarRacing = (function () {
         this.y = y;
         this.side = side;
     };
-
 
     var sides = {
         left: 0,
@@ -29,6 +26,7 @@ var RetroCarRacing = (function () {
     var infoDomElement = null;
     var levelDomElement = null;
     var scoreDomElement = null;
+    var maxScoreDomElement = null;
     var ctx = null;
     var screenWidth = null;
     var screenHeight = null;
@@ -115,13 +113,13 @@ var RetroCarRacing = (function () {
     }
 
     function checkCollision(){
-        var tempCars = cars.filter(function(car){
+        var colidedCars = cars.filter(function(car){
             return car.side == myCar.side &&(
                    car.y > myCar.y && car.y < myCar.y + 4 ||
                    car.y < myCar.y && car.y > myCar.y - 4);
         });
 
-        return tempCars.length;
+        return colidedCars.length;
     }
 
     function keyDown(e) {
@@ -189,11 +187,9 @@ var RetroCarRacing = (function () {
         }
 
         if(checkCollision()){
-            alert('გაასხი! თავიდან...');
+            alert('გაასხი! თავიდან... (ქულა: '+score+')');
             restart();
         }
-
-
 
         render();
     }
@@ -204,6 +200,14 @@ var RetroCarRacing = (function () {
             setLevel(Math.floor(score / 10));
         }
         scoreDomElement.innerText = "score : " + score + ". ";
+        updateMaxScore();
+    }
+
+    function updateMaxScore(){
+        var old = parseInt(localStorage.getItem('maxScore'),10);
+        var maxScore = old > score ? old : score;
+        maxScoreDomElement.innerText = 'max : ' + maxScore;
+        localStorage.setItem('maxScore', maxScore);
     }
 
     function setLevel(level){
@@ -349,6 +353,11 @@ var RetroCarRacing = (function () {
             scoreDomElement.id = 'score';
 
             infoDomElement.appendChild(scoreDomElement);
+
+            maxScoreDomElement = document.createElement('span');
+            maxScoreDomElement.id = 'maxScore';
+
+            infoDomElement.appendChild(maxScoreDomElement);
         }
     };
 }());
