@@ -3,6 +3,7 @@
  */
 
 
+
 var RetroCarRacing = (function () {
 
     'use strict';
@@ -11,6 +12,7 @@ var RetroCarRacing = (function () {
         this.y = y;
         this.side = side;
     };
+
 
     var sides = {
         left: 0,
@@ -190,6 +192,8 @@ var RetroCarRacing = (function () {
             alert('გაასხი! თავიდან...');
             restart();
         }
+
+
 
         render();
     }
