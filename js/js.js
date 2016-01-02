@@ -320,12 +320,12 @@ var RetroCarRacing = (function () {
 
             //noinspection JSUnresolvedVariable
             if(x > e.changedTouches[0].clientX + 20) {
-                keyDown({which: 39});
+                keyDown({which: 37});
             }
             else {
                 //noinspection JSUnresolvedVariable
                 if(x < e.changedTouches[0].clientX - 20)
-                    keyDown({which:37});
+                    keyDown({which:39});
             }
         });
 
