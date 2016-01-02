@@ -21,6 +21,7 @@ var RetroCarRacing = (function () {
     sides[1] = 1;
     sides[2] = 2;
 
+    var maxScoreName = 'RetroCarRacingByTazo';
 
     var domElement = null;
     var infoDomElement = null;
@@ -204,10 +205,18 @@ var RetroCarRacing = (function () {
     }
 
     function updateMaxScore(){
-        var old = parseInt(localStorage.getItem('maxScore'),10);
+        var old = localStorage.getItem(maxScoreName);
+
+        if(old == null || old == undefined || isNaN(parseInt(old,10)) ){
+            localStorage.setItem(maxScoreName, 0);
+            old = 0;
+        }else{
+            old = parseInt(old, 10);
+        }
+
         var maxScore = old > score ? old : score;
         maxScoreDomElement.innerText = 'max : ' + maxScore;
-        localStorage.setItem('maxScore', maxScore);
+        localStorage.setItem(maxScoreName, maxScore);
     }
 
     function setLevel(level){
@@ -355,7 +364,7 @@ var RetroCarRacing = (function () {
             infoDomElement.appendChild(scoreDomElement);
 
             maxScoreDomElement = document.createElement('span');
-            maxScoreDomElement.id = 'maxScore';
+            maxScoreDomElement.id = maxScoreName;
 
             infoDomElement.appendChild(maxScoreDomElement);
         }
