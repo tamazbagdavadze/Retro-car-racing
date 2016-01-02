@@ -162,9 +162,13 @@ var RetroCarRacing = (function () {
     function oneStep(){
         emptyRoadSquareNumber = (2 + emptyRoadSquareNumber) % 4;
 
-        var newScore = cars.filter(function(car){ return car.y == myCar.y + 4; }).length;
-        if(newScore)
+        var newScore = cars.filter(function(car){
+           return car.y == myCar.y + 4;
+        }).length;
+
+        if(newScore){
             setScore(score + newScore);
+        }
 
         cars = cars.filter(function(car){return car.y < 18;}); // delete passed cars
         cars.forEach(function(car){car.y++;});
@@ -174,16 +178,18 @@ var RetroCarRacing = (function () {
         var addNewCar = r%7 == 0; // TODO analyze
         var side = sides[r%3]; // TODO make smarter
 
-        if(cars.filter(function(car){return car.side == side && car.y < 4;}).length) { // distance between cars
-            addNewCar = false;
-        }
+        var overlapsExistingCar = cars.filter(function(car){
+          return car.side == side && car.y < 4;
+        }).length;
 
-        if(checkPath(side) == false){
+        var noPath = !checkPath(side); //TODO revert in func
+
+        if(overlapsExistingCar || noPath) {
             addNewCar = false;
         }
 
         if(addNewCar){
-            let car = new Car(side, 0);
+            let car = new Car(side, -4);
             cars.push(car);
         }
 
@@ -231,14 +237,14 @@ var RetroCarRacing = (function () {
     //TODO refactor
     function checkPath(side){
 
-        var m = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]];
+        var m = [[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]];
 
         m[side][0] = 1; // new car
-        m[myCar.side][5] = 1; // my car
+        m[myCar.side][6] = 1; // my car
 
-        //file array with cars
+        //fill array with cars
         cars.forEach(function(car){
-            var index = Math.floor(car.y / 4);
+            var index = Math.floor((car.y + 4) / 4);
             m[car.side][index] = 1;
 
             if(car.y % 4 > 0){
@@ -271,7 +277,7 @@ var RetroCarRacing = (function () {
                     rec(x-1, y);
         }
 
-        rec(myCar.side, 5);
+        rec(myCar.side, 6);
 
         return existsPath;
     }
