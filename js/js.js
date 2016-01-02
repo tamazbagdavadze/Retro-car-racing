@@ -38,8 +38,10 @@ var RetroCarRacing = (function () {
     const roadHeightSegments = 18;
     const roadWidthSegments = 11;
     var interval = 200;
+    const intervalLimit = 51;
     var intervalId = null;
     var score = 0;
+    var level = 0;
 
     // TODO rewrite smarter...
     function drawCar(car) {
@@ -81,11 +83,11 @@ var RetroCarRacing = (function () {
         ctx.strokeStyle = 'white';
         ctx.lineWidth = 1;
 
-        var from = innerSquareWidth / 2;
-        var to = width - from;
+        var _from = innerSquareWidth / 2;
+        var to = width - _from;
 
-        for (let i = from; i < to; i += innerSquareWidth) {
-            for (let j = to - innerSquareWidth; j > from - innerSquareWidth; j -= innerSquareWidth) {
+        for (let i = _from; i < to; i += innerSquareWidth) {
+            for (let j = to - innerSquareWidth; j > _from - innerSquareWidth; j -= innerSquareWidth) {
                 ctx.fillRect(x + i, y + j, innerSquareWidth, innerSquareWidth);
                 ctx.strokeRect(x + i, y + j, innerSquareWidth, innerSquareWidth);
             }
@@ -175,8 +177,8 @@ var RetroCarRacing = (function () {
 
         var r  = Math.floor(Math.random()*10000);
 
-        var addNewCar = r%7 == 0; // TODO analyze
-        var side = sides[r%3]; // TODO make smarter
+        var addNewCar = r % (6 - level) == 0; // TODO analyze
+        var side = sides[r%3];
 
         var overlapsExistingCar = cars.filter(function(car){
           return car.side == side && car.y < 4;
@@ -225,9 +227,12 @@ var RetroCarRacing = (function () {
         localStorage.setItem(maxScoreName, maxScore);
     }
 
-    function setLevel(level){
-        levelDomElement.innerText = "level : " + level + ".  ";
-        if(interval>30 && level != 0){
+    function setLevel(newLevel){
+
+        level = newLevel;
+        levelDomElement.innerText = "level : " + newLevel + ".  ";
+
+        if(interval > intervalLimit && newLevel != 0){
             interval -= 30;
             clearInterval(intervalId);
             intervalId = setInterval(oneStep, interval);
