@@ -38,7 +38,7 @@ var RetroCarRacing = (function () {
     const roadHeightSegments = 18;
     const roadWidthSegments = 11;
     var interval = 200;
-    const intervalLimit = 51;
+    const intervalLimit = 80;
     var intervalId = null;
     var score = 0;
     var level = 0;
@@ -47,7 +47,7 @@ var RetroCarRacing = (function () {
     function drawCar(car) {
 
         var x = squareWidth;
-        var y = car.y * squareWidth;
+        var y = (car.y - 4) * squareWidth;
 
         x += car.side * 3 * squareWidth;
 
@@ -94,7 +94,8 @@ var RetroCarRacing = (function () {
         }
     }
 
-    function resize() { //TODO crashes when height is 0
+    //TODO crashes when height is 0
+    function resize() {
 
         var bodyWidth = parseInt(getComputedStyle(document.body)['width'].slice(0, -2), 10);
 
@@ -160,7 +161,6 @@ var RetroCarRacing = (function () {
         render();
     }
 
-    //TODO refactor
     function oneStep(){
         emptyRoadSquareNumber = (2 + emptyRoadSquareNumber) % 4;
 
@@ -172,26 +172,26 @@ var RetroCarRacing = (function () {
             setScore(score + newScore);
         }
 
-        cars = cars.filter(function(car){return car.y < 18;}); // delete passed cars
+        cars = cars.filter(function(car){return car.y < 22;}); // delete passed cars
         cars.forEach(function(car){car.y++;});
 
-        var r  = Math.floor(Math.random()*10000);
+        var r  = Math.floor(Math.random()*1000);
 
-        var addNewCar = r % (6 - level) == 0; // TODO analyze
-        var side = sides[r%3];
+        var addNewCar =  r % (8 - level < 2 ? 2 : 8 - level) == 0;
+        var side = sides[r % 3];
 
         var overlapsExistingCar = cars.filter(function(car){
           return car.side == side && car.y < 4;
         }).length;
 
-        var noPath = !checkPath(side); //TODO revert in func
+        var isPath = checkPath(side); //TODO revert in func
 
-        if(overlapsExistingCar || noPath) {
+        if(overlapsExistingCar || !isPath) {
             addNewCar = false;
         }
 
         if(addNewCar){
-            let car = new Car(side, -4);
+            let car = new Car(side, 0);
             cars.push(car);
         }
 
@@ -236,10 +236,15 @@ var RetroCarRacing = (function () {
             interval -= 30;
             clearInterval(intervalId);
             intervalId = setInterval(oneStep, interval);
+        }else
+        if(interval <= intervalLimit && interval + 20 > intervalLimit){
+            interval -= 2;
+            clearInterval(intervalId);
+            intervalId = setInterval(oneStep, interval);
         }
     }
 
-    //TODO refactor
+    //TODO fix
     function checkPath(side){
 
         var m = [[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]];
@@ -249,7 +254,7 @@ var RetroCarRacing = (function () {
 
         //fill array with cars
         cars.forEach(function(car){
-            var index = Math.floor((car.y + 4) / 4);
+            var index = Math.floor((car.y) / 4);
             m[car.side][index] = 1;
 
             if(car.y % 4 > 0){
@@ -288,16 +293,18 @@ var RetroCarRacing = (function () {
     }
 
     function restart (){
-        clearInterval(intervalId);
         cars = [];
 
         setScore(0);
         setLevel(0);
 
         interval = 200;
-        myCar = new Car(sides.right, roadHeightSegments - 4);
-        render();
+        myCar = new Car(sides.right, roadHeightSegments);
+
+        clearInterval(intervalId);
         intervalId = setInterval(oneStep, interval);
+
+        render();
     }
 
     function init() {
