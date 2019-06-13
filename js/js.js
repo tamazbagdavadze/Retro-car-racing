@@ -1,16 +1,17 @@
 /**
  * Created by tazo on 12/30/2015.
  */
-var RetroCarRacing = (function() {
+
+const RetroCarRacing = (function() {
 
     'use strict';
 
-    var Car = function(side, y) {
+    const Car = function(side, y) {
         this.y = y;
         this.side = side;
     };
 
-    var sides = {
+    const sides = {
         left: 0,
         center: 1,
         right: 2
@@ -20,33 +21,33 @@ var RetroCarRacing = (function() {
     sides[1] = 1;
     sides[2] = 2;
 
-    var maxScoreName = 'RetroCarRacingByTazo';
+    const maxScoreName = 'RetroCarRacingByTazo';
 
-    var domElement = null;
-    var infoDomElement = null;
-    var levelDomElement = null;
-    var scoreDomElement = null;
-    var maxScoreDomElement = null;
-    var ctx = null;
-    var screenWidth = null;
-    var screenHeight = null;
-    var squareWidth = null;
-    var emptyRoadSquareNumber = 1;
-    var cars = [];
-    var myCar = null;
-    var roadHeightSegments = 18;
-    var roadWidthSegments = 11;
-    var interval = 200;
-    var intervalLimit = 80;
-    var intervalId = null;
-    var score = 0;
-    var level = 0;
+    let domElement = null;
+    let infoDomElement = null;
+    let levelDomElement = null;
+    let scoreDomElement = null;
+    let maxScoreDomElement = null;
+    let ctx = null;
+    let screenWidth = null;
+    let screenHeight = null;
+    let squareWidth = null;
+    let emptyRoadSquareNumber = 1;
+    let cars = [];
+    let myCar = null;
+    const roadHeightSegments = 18;
+    const roadWidthSegments = 11;
+    let interval = 200;
+    const intervalLimit = 80;
+    let intervalId = null;
+    let score = 0;
+    let level = 0;
 
     // TODO rewrite smarter...
     function drawCar(car) {
 
-        var x = squareWidth;
-        var y = (car.y - 4) * squareWidth;
+        let x = squareWidth;
+        let y = (car.y - 4) * squareWidth;
 
         x += car.side * 3 * squareWidth;
 
@@ -70,19 +71,19 @@ var RetroCarRacing = (function() {
 
     function drawSquare(x, y) {
 
-        var width = squareWidth;
+        const width = squareWidth;
 
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 3;
         ctx.strokeRect(x, y, width, width);
 
-        var innerSquareWidth = width / 4;
+        const innerSquareWidth = width / 4;
 
         ctx.strokeStyle = 'white';
         ctx.lineWidth = 1;
 
-        var _from = innerSquareWidth / 2;
-        var to = width - _from;
+        const _from = innerSquareWidth / 2;
+        const to = width - _from;
 
         for (let i = _from; i < to; i += innerSquareWidth) {
             for (let j = to - innerSquareWidth; j > _from - innerSquareWidth; j -= innerSquareWidth) {
@@ -95,7 +96,7 @@ var RetroCarRacing = (function() {
     //TODO crashes when height is 0
     function resize() {
 
-        var bodyWidth = parseInt(getComputedStyle(document.body).width.slice(0, -2), 10);
+        const bodyWidth = parseInt(getComputedStyle(document.body).width.slice(0, -2), 10);
 
         if (bodyWidth < screenWidth) { //TODO fix width change
             screenWidth = bodyWidth;
@@ -115,13 +116,13 @@ var RetroCarRacing = (function() {
     }
 
     function checkCollision() {
-        var colidedCars = cars.filter(function(car) {
-            return car.side == myCar.side && (
+        const collidedCars = cars.filter(function (car) {
+            return car.side === myCar.side && (
                 car.y > myCar.y && car.y < myCar.y + 4 ||
                 car.y < myCar.y && car.y > myCar.y - 4);
         });
 
-        return colidedCars.length;
+        return collidedCars.length;
     }
 
     function keyDown(e) {
@@ -130,7 +131,7 @@ var RetroCarRacing = (function() {
             /* left */
             case 37:
                 {
-                    if (myCar.side != sides.left) {
+                    if (myCar.side !== sides.left) {
                         myCar.side--;
                     }
                     break;
@@ -146,7 +147,7 @@ var RetroCarRacing = (function() {
                 /*right*/
             case 39:
                 {
-                    if (myCar.side != sides.right) {
+                    if (myCar.side !== sides.right) {
                         myCar.side++;
                     }
                     break;
@@ -166,8 +167,8 @@ var RetroCarRacing = (function() {
     function oneStep() {
         emptyRoadSquareNumber = (2 + emptyRoadSquareNumber) % 4;
 
-        var newScore = cars.filter(function(car) {
-            return car.y == myCar.y + 4;
+        const newScore = cars.filter(function (car) {
+            return car.y === myCar.y + 4;
         }).length;
 
         if (newScore) {
@@ -181,16 +182,16 @@ var RetroCarRacing = (function() {
             car.y++;
         });
 
-        var r = Math.floor(Math.random() * 1000);
+        const r = Math.floor(Math.random() * 1000);
 
-        var addNewCar = r % (8 - level < 2 ? 2 : 8 - level) === 0;
-        var side = sides[r % 3];
+        let addNewCar = r % (8 - level < 2 ? 2 : 8 - level) === 0;
+        const side = sides[r % 3];
 
-        var overlapsExistingCar = cars.filter(function(car) {
-            return car.side == side && car.y < 4;
+        const overlapsExistingCar = cars.filter(function (car) {
+            return car.side === side && car.y < 4;
         }).length;
 
-        var isPath = checkPath(side); //TODO revert in func
+        const isPath = checkPath(side); //TODO revert in func
 
         if (overlapsExistingCar || !isPath) {
             addNewCar = false;
@@ -219,18 +220,17 @@ var RetroCarRacing = (function() {
     }
 
     function updateMaxScore() {
-        var old = localStorage.getItem(maxScoreName);
+        let oldStr = localStorage.getItem(maxScoreName);
 
-        if (old == null || old === undefined || isNaN(parseInt(old, 10))) {
-            localStorage.setItem(maxScoreName, 0);
-            old = 0;
-        } else {
-            old = parseInt(old, 10);
+        let old = 0;
+
+        if(oldStr){
+            old = parseInt(oldStr, 10);
         }
 
-        var maxScore = old > score ? old : score;
+        const maxScore = old > score ? old : score;
         maxScoreDomElement.innerText = 'max : ' + maxScore;
-        localStorage.setItem(maxScoreName, maxScore);
+        localStorage.setItem(maxScoreName, maxScore.toString(10));
     }
 
     function setLevel(newLevel) {
@@ -253,7 +253,7 @@ var RetroCarRacing = (function() {
     //TODO fix
     function checkPath(side) {
 
-        var m = [
+        const m = [
             [0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0]
@@ -264,7 +264,7 @@ var RetroCarRacing = (function() {
 
         //fill array with cars
         cars.forEach(function(car) {
-            var index = Math.floor((car.y) / 4);
+            const index = Math.floor((car.y) / 4);
             m[car.side][index] = 1;
 
             if (car.y % 4 > 0) {
@@ -272,7 +272,7 @@ var RetroCarRacing = (function() {
             }
         });
 
-        var existsPath = false;
+        let existsPath = false;
 
         function rec(x, y) {
 
@@ -289,7 +289,7 @@ var RetroCarRacing = (function() {
             if (y !== 0)
                 if (m[x][y - 1] === 0)
                     rec(x, y - 1);
-            if (x != 2)
+            if (x !== 2)
                 if (m[x + 1][y] === 0)
                     rec(x + 1, y);
             if (x !== 0)
@@ -323,10 +323,10 @@ var RetroCarRacing = (function() {
         window.addEventListener('resize', resize);
         window.addEventListener('keydown', keyDown);
         window.addEventListener('touchstart', function(e) {
-            localStorage.setItem('x', e.targetTouches[0].clientX);
+            localStorage.setItem('x', e.targetTouches[0].clientX.toString(10));
         });
         window.addEventListener('touchend', function(e) {
-            var x = parseInt(localStorage.getItem('x'), 10);
+            const x = parseInt(localStorage.getItem('x'), 10);
 
             //noinspection JSUnresolvedVariable
             if (x > e.changedTouches[0].clientX + 20) {
@@ -366,7 +366,7 @@ var RetroCarRacing = (function() {
 
         for (let i = 0; i < screenHeight / squareWidth; i++) {
 
-            if (i % 4 == emptyRoadSquareNumber)
+            if (i % 4 === emptyRoadSquareNumber)
                 continue;
 
             drawSquare(0, i * squareWidth);
